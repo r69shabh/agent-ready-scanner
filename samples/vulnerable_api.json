@@ -1,0 +1,29 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Vulnerable demo API (prose-only status)", "version": "0.1.0" },
+  "servers": [{ "url": "https://api.example.com" }],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "summary": "List pets, optionally filtered by status",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by status. Allowed values: available, pending, sold. Must be one of the valid options.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max items. Must be between 1 and 100.",
+            "schema": { "type": "integer" }
+          },
+          { "name": "tag", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  }
+}
