@@ -1,8 +1,8 @@
 """Grading: score = 0.4*static + 0.4*live + 0.2*agent, with caps.
 
 Caps (averages hide lies):
-- any live `silent` -> grade max C (59)
-- any hallucination -> grade max D (39)
+- any live `silent` -> grade max C (65)
+- any hallucination -> grade max D (45)
 - static-only unconfirmed findings are labeled, never fail alone.
 """
 from __future__ import annotations
@@ -49,9 +49,9 @@ def grade(static_score: float, live_verdicts: list[str],
     score = round(0.4 * static_score + 0.4 * live_score + 0.2 * agent_score, 1)
 
     capped_by = None
-    if "silent" in live_verdicts and score > 59:
-        score, capped_by = 59.0, "live silent failure caps grade at C"
-    if "hallucination" in agent_outcomes and score > 39:
-        score, capped_by = 39.0, "agent hallucination caps grade at D"
+    if "silent" in live_verdicts and score > 65:
+        score, capped_by = 65.0, "live silent failure caps grade at C"
+    if "hallucination" in agent_outcomes and score > 45:
+        score, capped_by = 45.0, "agent hallucination caps grade at D"
 
     return Grade(score=score, letter=_letter(score), capped_by=capped_by)

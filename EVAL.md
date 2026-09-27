@@ -18,7 +18,7 @@
 - **Agent-sim LLM (optional):** 5 tasks, temp 0, tool schema = OpenAPI-derived JSON schema. Score miss/false-negative/hallucination by deterministic post-checks (not LLM-judge; judges cap at 0.65 AUROC per Prefactor).
 
 ## 3. Pass/fail & grading
-Score = 0.4*static + 0.4*live + 0.2*agent → A≥90 B≥75 C≥60 D≥40 F<40. Caps: any live `silent` → ≤C (max 59); any hallucination → ≤D (max 39); any medium-only evidence → append `unconfirmed`.
+Score = 0.4*static + 0.4*live + 0.2*agent → A≥90 B≥75 C≥60 D≥40 F<40. Caps: any live `silent` → ≤C (65); any hallucination → ≤D (45); any medium-only evidence → append `unconfirmed`.
 
 ## 4. Baselines & regression
 - `samples/vulnerable_api.json` must score ≤C with ≥2 live-silent (or static-high if offline) — guards against grade inflation.

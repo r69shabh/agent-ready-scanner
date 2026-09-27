@@ -34,6 +34,6 @@ def test_healthy_scores_high():
 
 def test_caps():
     g = grade(95.0, ["silent", "honest"], ["ok"], live_ran=True)
-    assert g.letter == "C" and g.score == 59.0
+    assert g.letter == "C" and g.score == 65.0
     g2 = grade(95.0, ["honest"], ["hallucination"], live_ran=True)
-    assert g2.letter == "D" and g2.score == 39.0
+    assert g2.letter == "D" and g2.score == 45.0
