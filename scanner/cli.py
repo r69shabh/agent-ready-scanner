@@ -86,9 +86,16 @@ def scan(spec_src: str, base_url: str | None, no_live: bool,
         top_fixes.append(generic_fix("review", "remaining findings in report"))
 
     # HTML report
-    live_rows = [dict(operation=f.operation, probe=f.probe, url=f.url,
+    live_rows = []
+    for f in live:
+        try:
+            r = httpx.get(f.url, headers=PROBE_HEADERS, timeout=10.0) if live_ran else None
+            body = (r.text[:500] if r is not None else "")
+        except Exception:
+            body = ""
+        live_rows.append(dict(operation=f.operation, probe=f.probe, url=f.url,
                       status=f.status, verdict=f.verdict, evidence=f.evidence,
-                      evidence_body=f.evidence, curl=f.curl) for f in live]
+                      evidence_body=body, curl=f.curl))
     # attach truncated bodies already in evidence; keep template happy
     tmpl = Template(Path(__file__).with_name("report.html").read_text())
     html = tmpl.render(grade=g, static=static, ops=ops, live=live_rows,
