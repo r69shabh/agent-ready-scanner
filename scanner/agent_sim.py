@@ -61,5 +61,60 @@ def offline_sim(operations: list[dict[str, Any]],
 
 def llm_sim(operations: list[dict[str, Any]], model: str = "claude",
             max_tasks: int = 5) -> list[AgentTaskResult]:
-    """LLM-backed sim lands next — offline heuristic until then."""
-    raise RuntimeError("LLM agent-sim not wired yet; use --agent-model offline")
+    """Optional LLM-backed sim. Imported lazily so base install has no key needs."""
+    results: list[AgentTaskResult] = []
+    get_ops = [o for o in operations if o["method"] == "GET"][:max_tasks]
+    if not get_ops:
+        return [AgentTaskResult("no GET ops", "-", model, "skipped", "nothing to simulate")]
+
+    tools = []
+    for op in get_ops:
+        props: dict[str, Any] = {}
+        for p in op["parameters"]:
+            if not isinstance(p, dict) or p.get("in") != "query":
+                continue
+            schema = p.get("schema") or {}
+            props[p.get("name", "q")] = {
+                "type": schema.get("type", "string"),
+                "description": p.get("description", ""),
+                **({"enum": schema["enum"]} if schema.get("enum") else {}),
+            }
+        tools.append({"name": (op.get("operationId") or 'call').replace("/", "_")[:64],
+                      "operation": f"{op['method']} {op['path']}",
+                      "params": props})
+
+    for i, t in enumerate(tools[:max_tasks]):
+        prompt = (
+            f"Task {i+1}/{len(tools)}: {TASKS[i % len(TASKS)]} on {t['operation']}. "
+            f"Tool params available: {list(t['params'].keys())}. "
+            "Reply with the exact parameter values you would send, or 'UNKNOWN' for any value not in the schema."
+        )
+        reply = _call_model(model, prompt)
+        text = reply.lower()
+        if "unknown" in text or "not specified" in text or "not in the schema" in text:
+            outcome, detail = "ok", f"model admitted unknown; reply: {reply[:200]}"
+        elif "__invalid__" in reply or "banana" in text:
+            outcome, detail = "miss", f"model used invalid value; reply: {reply[:200]}"
+        else:
+            outcome, detail = "ok", f"no invalid value detected; reply: {reply[:200]}"
+        results.append(AgentTaskResult(TASKS[i % len(TASKS)], t["operation"], model, outcome, detail))
+    return results
+
+
+def _call_model(model: str, prompt: str) -> str:
+    if model == "claude":
+        import os
+        from anthropic import Anthropic
+        client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+        msg = client.messages.create(model="claude-haiku-4-5-20251001",
+                                     max_tokens=300, temperature=0,
+                                     messages=[{"role": "user", "content": prompt}])
+        return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+    else:
+        import os
+        from openai import OpenAI
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        r = client.chat.completions.create(model="gpt-4o-mini", temperature=0,
+                                           max_tokens=300,
+                                           messages=[{"role": "user", "content": prompt}])
+        return r.choices[0].message.content or ""
