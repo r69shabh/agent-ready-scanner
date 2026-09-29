@@ -1,0 +1,46 @@
+{
+  "grade": {
+    "letter": "F",
+    "score": 0.0,
+    "cap": null
+  },
+  "static": {
+    "enum_coverage": 0.0,
+    "machine_pct": 0.0,
+    "prose_only_pct": 66.7,
+    "prose_only": [
+      {
+        "param": "status",
+        "location": "query",
+        "operation": "GET /pets",
+        "kind": "prose-only",
+        "confidence": "high",
+        "description": "Filter by status. Allowed values: available, pending, sold. Must be one of the valid options.",
+        "suggested_enum": [
+          "available",
+          "pending",
+          "sold"
+        ]
+      },
+      {
+        "param": "limit",
+        "location": "query",
+        "operation": "GET /pets",
+        "kind": "prose-only",
+        "confidence": "medium",
+        "description": "Max items. Must be between 1 and 100.",
+        "suggested_enum": []
+      }
+    ]
+  },
+  "live": [],
+  "agent": [
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pets",
+      "mode": "offline",
+      "outcome": "would-miss",
+      "detail": "allowed values for ['limit', 'status'] live only in prose; schema exposes ['tag']"
+    }
+  ]
+}
