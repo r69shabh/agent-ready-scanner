@@ -1,0 +1,37 @@
+{
+  "grade": {
+    "letter": "F",
+    "score": 38.8,
+    "cap": null
+  },
+  "static": {
+    "enum_coverage": 5.9,
+    "machine_pct": 41.2,
+    "prose_only_pct": 0.0,
+    "prose_only": []
+  },
+  "live": [],
+  "agent": [
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/findByStatus",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['status'] machine-readable"
+    },
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/findByTags",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['tags'] machine-readable"
+    },
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/{petId}",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['(none)'] machine-readable"
+    }
+  ]
+}

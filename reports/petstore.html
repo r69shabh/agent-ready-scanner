@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent-Ready Report — F (38.8)</title>
+<style>
+body{font-family:-apple-system,Inter,Segoe UI,Roboto,sans-serif;max-width:960px;margin:32px auto;padding:0 20px;color:#1a1a1a}
+.grade{font-size:64px;font-weight:800}.A{color:#15803d}.B{color:#65a30d}.C{color:#b45309}.D{color:#c2410c}.F{color:#b91c1c}
+.card{border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;margin:16px 0}
+.silent{background:#fef2f2;border-color:#fecaca}.honest{background:#f0fdf4;border-color:#bbf7d0}
+code,pre{background:#f6f8fa;border-radius:6px;padding:2px 6px}pre{padding:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+.small{color:#6b7280;font-size:13px}
+</style></head><body>
+<h1>Agent-Ready Report <span class="grade F">F</span></h1>
+<p>Score <b>38.8/100</b> = 0.4&times;static (23.5) + 0.4&times;live + 0.2&times;agent.
+</p>
+<p class="small">Spec: https://petstore3.swagger.io/api/v3/openapi.json · Ops scanned: 19 · Live probes: 0 (skipped — static-only) · Safety: GET-only, max 30 reqs, header X-Agent-Ready-Probe: 1.</p>
+
+<div class="card"><h2>Static — SilentProbe §2</h2>
+<table><tr><th>Params</th><th>Enum coverage</th><th>Machine-checkable</th><th>Prose-only</th></tr>
+<tr><td>17</td><td>5.9%</td><td>41.2%</td><td>0.0%</td></tr></table>
+</div>
+
+<div class="card"><h2>Live probes — read-only GET</h2>
+<p class="small">No live probes (no --base-url or no GET ops). Findings below are static-only, unconfirmed.</p></div>
+
+<div class="card"><h2>Agent simulation</h2>
+<table><tr><th>Task</th><th>Operation</th><th>Mode</th><th>Outcome</th><th>Detail</th></tr>
+<tr><td>describe allowed values from schema alone</td><td>GET /pet/findByStatus</td><td>offline</td><td><b>ok</b></td><td class="small">query params ['status'] machine-readable</td></tr><tr><td>describe allowed values from schema alone</td><td>GET /pet/findByTags</td><td>offline</td><td><b>ok</b></td><td class="small">query params ['tags'] machine-readable</td></tr><tr><td>describe allowed values from schema alone</td><td>GET /pet/{petId}</td><td>offline</td><td><b>ok</b></td><td class="small">query params ['(none)'] machine-readable</td></tr></table></div>
+
+<div class="card"><h2>Top 3 fixes (merge today)</h2>
+<ol><li><pre># No automatic fix — needs human review.</pre></li><li><pre># No automatic fix — needs human review.</pre></li><li><pre># No automatic fix — needs human review.</pre></li></ol>
+<p class="small">Method: static (SilentProbe §2: 7.5% enum / 15.2% machine-checkable / 40.1% prose-only) + live GET perturbations (invalid-enum, ignored-param) + offline/LLM agent-sim. Deterministic checks decide; LLM-judge never the verdict (AUROC ≤0.65).</p></div>
+</body></html>
