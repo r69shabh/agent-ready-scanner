@@ -30,6 +30,8 @@ table{border-collapse:collapse;width:100%}td,th{border:1px solid #e5e7eb;padding
 <div class="card {{ f.verdict }}"><b>{{ f.verdict|upper }}</b> — {{ f.probe }} on <code>{{ f.operation }}</code> → {{ f.status }}<br>
 <span class="small">{{ f.evidence }}</span><pre>{{ f.curl }}</pre>
 <span class="small">Body (≤500 chars):</span><pre>{{ f.evidence_body }}</pre></div>
+{% endfor %}
+{% if not live %}<p class="small">No live probes (no --base-url or no GET ops). Findings below are static-only, unconfirmed.</p>{% endif %}</div>
 
 <div class="card"><h2>Agent simulation</h2>
 <table><tr><th>Task</th><th>Operation</th><th>Mode</th><th>Outcome</th><th>Detail</th></tr>
