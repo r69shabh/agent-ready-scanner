@@ -1,0 +1,23 @@
+{
+  "grade": {
+    "letter": "B",
+    "score": 80.0,
+    "cap": null
+  },
+  "static": {
+    "enum_coverage": 50.0,
+    "machine_pct": 100.0,
+    "prose_only_pct": 0.0,
+    "prose_only": []
+  },
+  "live": [],
+  "agent": [
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pets",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['status', 'limit'] machine-readable"
+    }
+  ]
+}
