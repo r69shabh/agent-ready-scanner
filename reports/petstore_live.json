@@ -1,0 +1,92 @@
+{
+  "grade": {
+    "letter": "D",
+    "score": 42.7,
+    "cap": null
+  },
+  "static": {
+    "enum_coverage": 5.9,
+    "machine_pct": 41.2,
+    "prose_only_pct": 0.0,
+    "prose_only": []
+  },
+  "live": [
+    {
+      "operation": "GET /pet/findByStatus",
+      "probe": "invalid-enum",
+      "url": "https://petstore3.swagger.io/api/v3/pet/findByStatus?status=__invalid__",
+      "status": 400,
+      "verdict": "honest",
+      "evidence": "HTTP 400 with error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/pet/findByStatus?status=__invalid__'"
+    },
+    {
+      "operation": "GET /pet/findByStatus",
+      "probe": "ignored-param",
+      "url": "https://petstore3.swagger.io/api/v3/pet/findByStatus?status=test&___probe_nonsense=1",
+      "status": 400,
+      "verdict": "honest",
+      "evidence": "HTTP 400 with error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/pet/findByStatus?status=test&___probe_nonsense=1'"
+    },
+    {
+      "operation": "GET /pet/findByTags",
+      "probe": "invalid-enum",
+      "url": "https://petstore3.swagger.io/api/v3/pet/findByTags?tags=__invalid__",
+      "status": 200,
+      "verdict": "silent",
+      "evidence": "HTTP 200 with parsable body, invalid input accepted, no error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/pet/findByTags?tags=__invalid__'"
+    },
+    {
+      "operation": "GET /pet/findByTags",
+      "probe": "ignored-param",
+      "url": "https://petstore3.swagger.io/api/v3/pet/findByTags?tags=test&___probe_nonsense=1",
+      "status": 200,
+      "verdict": "silent",
+      "evidence": "HTTP 200 with parsable body, invalid input accepted, no error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/pet/findByTags?tags=test&___probe_nonsense=1'"
+    },
+    {
+      "operation": "GET /user/login",
+      "probe": "invalid-enum",
+      "url": "https://petstore3.swagger.io/api/v3/user/login?username=__invalid__",
+      "status": 200,
+      "verdict": "silent",
+      "evidence": "HTTP 200 with parsable body, invalid input accepted, no error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/user/login?username=__invalid__'"
+    },
+    {
+      "operation": "GET /user/login",
+      "probe": "ignored-param",
+      "url": "https://petstore3.swagger.io/api/v3/user/login?username=test&___probe_nonsense=1",
+      "status": 200,
+      "verdict": "silent",
+      "evidence": "HTTP 200 with parsable body, invalid input accepted, no error field",
+      "curl": "curl -H 'X-Agent-Ready-Probe: 1' 'https://petstore3.swagger.io/api/v3/user/login?username=test&___probe_nonsense=1'"
+    }
+  ],
+  "agent": [
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/findByStatus",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['status'] machine-readable"
+    },
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/findByTags",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['tags'] machine-readable"
+    },
+    {
+      "task": "describe allowed values from schema alone",
+      "operation": "GET /pet/{petId}",
+      "mode": "offline",
+      "outcome": "ok",
+      "detail": "query params ['(none)'] machine-readable"
+    }
+  ]
+}
