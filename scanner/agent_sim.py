@@ -27,9 +27,8 @@ PROVIDERS: dict[str, dict[str, str]] = {
                                    "https://integrate.api.nvidia.com/v1"),
         "env_key": "NVIDIA_API_KEY",
         "model": os.environ.get("NVIDIA_MODEL",
-                                # Copy exact ID from https://build.nvidia.com
-                                # (e.g. meta/llama-3.1-8b-instruct); override via env.
-                                "meta/llama-3.1-8b-instruct"),
+                                # Verified working Sept 2026 (user-tested).
+                                "deepseek-ai/deepseek-v4.1-flash"),
     },
     "groq": {
         "base_url": os.environ.get("GROQ_BASE_URL",
