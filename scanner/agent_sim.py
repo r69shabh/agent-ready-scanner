@@ -1,25 +1,50 @@
 """Agent simulation: would an agent miss / hallucinate on this API?
 
-Two modes:
+Modes:
 - offline (default, $0, deterministic): 'could an agent know allowed values
   from schema alone?' If allowed values live only in prose -> would-miss.
   Reproduces SilentProbe's 88/88 exemplified-vocab miss class.
-- llm (optional, needs ANTHROPIC_API_KEY and/or OPENAI_API_KEY): 5 tasks at
-  temp 0 with OpenAPI-derived tool schema; deterministic post-checks score
+- nvidia / groq (free tiers, OpenAI-compatible): 5 tasks at temp 0 with
+  OpenAPI-derived tool schema; deterministic post-checks score
   miss / false-negative / hallucination. LLM-judge is NOT the verdict
   (judges cap at 0.65 AUROC); string/state checks decide.
+- claude / gpt (legacy, paid): same harness via native SDKs.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any
+
+# Free-tier defaults (override via env). Sept 2026:
+# - NVIDIA Build: https://build.nvidia.com — OpenAI-compat
+#   https://integrate.api.nvidia.com/v1 — free credits to start.
+# - GroqCloud: https://console.groq.com — OpenAI-compat
+#   https://api.groq.com/openai/v1 — free tier, rate-limited.
+PROVIDERS: dict[str, dict[str, str]] = {
+    "nvidia": {
+        "base_url": os.environ.get("NVIDIA_BASE_URL",
+                                   "https://integrate.api.nvidia.com/v1"),
+        "env_key": "NVIDIA_API_KEY",
+        "model": os.environ.get("NVIDIA_MODEL",
+                                # Copy exact ID from https://build.nvidia.com
+                                # (e.g. meta/llama-3.1-8b-instruct); override via env.
+                                "meta/llama-3.1-8b-instruct"),
+    },
+    "groq": {
+        "base_url": os.environ.get("GROQ_BASE_URL",
+                                   "https://api.groq.com/openai/v1"),
+        "env_key": "GROQ_API_KEY",
+        "model": os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
+    },
+}
 
 
 @dataclass
 class AgentTaskResult:
     task: str
     operation: str
-    mode: str  # offline | claude | gpt
+    mode: str  # offline | nvidia | groq | claude | gpt
     outcome: str  # would-miss | ok | miss | false-negative | hallucination | skipped
     detail: str
 
@@ -59,9 +84,9 @@ def offline_sim(operations: list[dict[str, Any]],
     return results[:5]
 
 
-def llm_sim(operations: list[dict[str, Any]], model: str = "claude",
+def llm_sim(operations: list[dict[str, Any]], model: str = "nvidia",
             max_tasks: int = 5) -> list[AgentTaskResult]:
-    """Optional LLM-backed sim. Imported lazily so base install has no key needs."""
+    """LLM-backed sim, lazily importing SDKs so base install needs no keys."""
     results: list[AgentTaskResult] = []
     get_ops = [o for o in operations if o["method"] == "GET"][:max_tasks]
     if not get_ops:
@@ -102,19 +127,31 @@ def llm_sim(operations: list[dict[str, Any]], model: str = "claude",
 
 
 def _call_model(model: str, prompt: str) -> str:
+    if model in PROVIDERS:
+        from openai import OpenAI  # OpenAI-compatible: NVIDIA + Groq
+        cfg = PROVIDERS[model]
+        key = os.environ.get(cfg["env_key"], "")
+        if not key:
+            raise RuntimeError(
+                f"Set {cfg['env_key']} first "
+                f"(nvidia: https://build.nvidia.com, "
+                f"groq: https://console.groq.com/keys)")
+        client = OpenAI(api_key=key, base_url=cfg["base_url"])
+        r = client.chat.completions.create(model=cfg["model"], temperature=0,
+                                           max_tokens=300,
+                                           messages=[{"role": "user", "content": prompt}])
+        return r.choices[0].message.content or ""
     if model == "claude":
-        import os
         from anthropic import Anthropic
         client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
         msg = client.messages.create(model="claude-haiku-4-5-20251001",
                                      max_tokens=300, temperature=0,
                                      messages=[{"role": "user", "content": prompt}])
         return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
-    else:
-        import os
-        from openai import OpenAI
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        r = client.chat.completions.create(model="gpt-4o-mini", temperature=0,
-                                           max_tokens=300,
-                                           messages=[{"role": "user", "content": prompt}])
-        return r.choices[0].message.content or ""
+    # legacy "gpt" = OpenAI proper
+    from openai import OpenAI
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    r = client.chat.completions.create(model="gpt-4o-mini", temperature=0,
+                                       max_tokens=300,
+                                       messages=[{"role": "user", "content": prompt}])
+    return r.choices[0].message.content or ""
