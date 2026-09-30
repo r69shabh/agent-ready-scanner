@@ -10,3 +10,10 @@ anthropic>=0.40.0
 openai>=1.55.0
 python-dotenv>=1.0.0
 pytest==8.3.4
+
+# Local run (your machine — sandbox egress is blocked by NVIDIA):
+#   pip install -r requirements.txt
+#   export NVIDIA_API_KEY=... GROQ_API_KEY=...
+#   python3 scripts/check_providers.py
+#   python3 -m scanner.cli scan --spec samples/vulnerable_api.json --no-live \
+#     --agent-model nvidia --report reports/vuln_nvidia.html --json-out reports/vuln_nvidia.json

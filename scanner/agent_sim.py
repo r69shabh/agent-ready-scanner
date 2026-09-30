@@ -28,7 +28,7 @@ PROVIDERS: dict[str, dict[str, str]] = {
         "env_key": "NVIDIA_API_KEY",
         "model": os.environ.get("NVIDIA_MODEL",
                                 # Verified working Sept 2026 (user-tested).
-                                "deepseek-ai/deepseek-v4.1-flash"),
+                                "z-ai/glm-5.3-flash"),
     },
     "groq": {
         "base_url": os.environ.get("GROQ_BASE_URL",
@@ -135,7 +135,7 @@ def _call_model(model: str, prompt: str) -> str:
                 f"Set {cfg['env_key']} first "
                 f"(nvidia: https://build.nvidia.com, "
                 f"groq: https://console.groq.com/keys)")
-        client = OpenAI(api_key=key, base_url=cfg["base_url"])
+        client = OpenAI(api_key=key, base_url=cfg["base_url"], timeout=60.0)
         r = client.chat.completions.create(model=cfg["model"], temperature=0,
                                            max_tokens=300,
                                            messages=[{"role": "user", "content": prompt}])
