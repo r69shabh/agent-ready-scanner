@@ -33,8 +33,8 @@ def cli() -> None:
 @click.option("--base-url", default=None, help="Live server base URL for GET probes")
 @click.option("--no-live", is_flag=True, help="Static + offline sim only ($0)")
 @click.option("--agent-model", default="offline",
-              type=click.Choice(["offline", "claude", "gpt"]),
-              help="Agent sim mode (llm modes need API keys)")
+              type=click.Choice(["offline", "nvidia", "groq", "claude", "gpt"]),
+              help="Agent sim: offline ($0) or LLM (nvidia/groq free tiers)")
 @click.option("--max-requests", default=30, show_default=True)
 @click.option("--report", default="reports/report.html", show_default=True)
 @click.option("--json-out", default=None, help="Also write machine-readable JSON")
